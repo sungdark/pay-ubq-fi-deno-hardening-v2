@@ -1,0 +1,14 @@
+[2026-02-27 07:12 UTC] bounty-opportunity-scout
+- Permission check (strict order, any-of continue):
+  1) gh auth status: OK
+  2) issue comment probe (post+delete): OK
+  3) fork push probe (temp branch push/delete): OK
+- Global gh api /search/issues: 404 in current environment; fallback used.
+- Fallback scan targets: Scottcjn/rustchain-bounties, Pulsefy/QiuckEx, tscircuit/circuitjson.com, Mint-Claw/content-split, Mint-Claw/market-monitor, FinMind/FinMind, tenstorrent/tt-metal.
+- Fresh explicit reward leads observed:
+  * rustchain-bounties#451 (25 RTC, deploy dashboard)
+  * rustchain-bounties#449 (50 RTC, BoTTube bot upload)
+  * rustchain-bounties#436/#435/#434 (150 RTC each, legacy miner ports)
+  * Mint-Claw/content-split#1 (10 USD)
+  * Mint-Claw/market-monitor#1 (15 USD)
+- Decision: no new low-friction, unclaimed, code-PR bounty with clear near-term in-repo settlement selected for immediate execution this cycle.

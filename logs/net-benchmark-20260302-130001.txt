@@ -1,0 +1,14 @@
+# Net Benchmark
+UTC Time: 2026-03-02 13:00:01
+Host: X-tmp-test
+
+Region          Connect(ms)     TTFB(ms)    Total(ms)
+Tokyo                 250.6        807.7        807.8
+Singapore             187.8        613.6        613.7
+Frankfurt              32.7        136.7        136.8
+London                 36.8        170.0        170.1
+Virginia               99.6        349.9        350.0
+California            186.6        550.7        550.8
+Sydney                314.6        995.6        995.6
+
+# Local speedtest (nearest)

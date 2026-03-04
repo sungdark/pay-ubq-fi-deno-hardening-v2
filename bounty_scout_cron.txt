@@ -1,0 +1,4 @@
+# Bounty Opportunity Scout - Hourly Cron Job
+
+# Run every hour at 0 minutes
+0 * * * * /root/.openclaw/workspace/bounty_scout_cron.sh >> /root/.openclaw/workspace/logs/bounty_scout_cron.log 2>&1

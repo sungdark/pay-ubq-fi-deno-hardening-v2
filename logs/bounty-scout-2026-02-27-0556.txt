@@ -1,0 +1,28 @@
+[2026-02-27 05:56 UTC] bounty-opportunity-scout
+
+Permission gate (must check in order, continue if any one passes):
+1) gh auth status: OK
+2) issue comment capability: OK (post+delete probe on Scottcjn/rustchain-bounties#433)
+3) fork push capability: OK (temp branch push/delete on sungdark/rustchain-bounties)
+=> Rule result: CONTINUE (any-of 1/2/3)
+
+Scan scope:
+- Global GitHub issues search via gh api /search/issues (sorted by updated)
+- Query: is:open is:issue archived:false (bounty OR reward OR "help wanted")
+- Prioritized explicit reward + clear settlement path
+
+Runtime note:
+- `gh search issues` is unavailable in current gh build; switched to `gh api search/issues` fallback.
+
+Notable explicit-reward hits seen this cycle:
+- Scottcjn/rustchain-bounties#433 (5 RTC)
+- commaai/openpilot#37277 ($500)
+- Scottcjn/rustchain-bounties#437 (200 RTC phased)
+- AnilChinchawale/nethermind#30 (reward blocks 1800)
+- microg/GmsCore#2994 (14999)
+
+Actionability check:
+- rustchain-bounties#437 already claimed and has fresh implementation PR posted by another contributor (PR #417).
+
+Decision:
+- No new unclaimed low-friction CODE bounty with clear near-term in-repo settlement path was selected for immediate fork-first execution this cycle.

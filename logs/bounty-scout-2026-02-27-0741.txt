@@ -1,0 +1,8 @@
+[2026-02-27 07:41 UTC] bounty-opportunity-scout
+- Permission check (strict order, any-of continue):
+  1) gh auth status: OK
+  2) issue comment probe (post+delete): OK
+  3) fork push probe (temp branch push/delete): OK (validated against fork remote; upstream origin push is expected-denied)
+- Gate decision: continue (at least one capability available).
+- Global gh api search/issues: FAIL (gh: Not Found (HTTP 404) )
+- Fallback scan targets: Scottcjn/rustchain-bounties, Mint-Claw/content-split, Mint-Claw/market-monitor

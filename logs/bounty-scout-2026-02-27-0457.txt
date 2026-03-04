@@ -1,0 +1,23 @@
+[2026-02-27 04:57 UTC] bounty-opportunity-scout
+
+Permission gate (must check in order, continue if any one passes):
+1) gh auth status: OK
+2) issue comment capability: OK (post+delete probe on Scottcjn/rustchain-bounties#433)
+3) fork push capability: FAIL (temp branch push/delete on sungdark/rustchain-bounties)
+=> Rule result: CONTINUE (any-of 1/2/3)
+
+Scan scope:
+- Global GitHub issues search via gh api /search/issues (sorted by updated)
+- Query: is:open is:issue archived:false (bounty OR reward OR "help wanted")
+- Prioritized explicit reward + clear settlement path
+
+Notable explicit-reward hits seen this cycle:
+- projectdiscovery/nuclei#6398 ($150)
+- devpool-directory/devpool-directory#5012 ($600)
+- Spectral-Finance/lux#87 ($750)
+- tenstorrent/tt-metal#32068 ($1500)
+- BasedHardware/omi#3040 ($1000)
+- tez-capital/tezsign#1 (100 XTZ; complex kernel minimization)
+
+Decision:
+- No new unclaimed low-friction CODE bounty with clear near-term in-repo settlement path was selected for immediate fork-first execution this cycle.

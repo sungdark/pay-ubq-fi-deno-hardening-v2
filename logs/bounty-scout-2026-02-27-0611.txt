@@ -1,0 +1,31 @@
+[2026-02-27 06:11 UTC] bounty-opportunity-scout
+
+Permission gate (must check in order, continue if any one passes):
+1) gh auth status: OK
+2) issue comment capability: OK (probe on Scottcjn/rustchain-bounties#433; probe comment deleted)
+3) fork push capability: OK (temp branch push/delete on sungdark/rustchain-bounties via fork remote)
+=> Rule result: CONTINUE (any-of 1/2/3)
+
+Scan scope:
+- gh global /search/issues API currently returns HTTP 404 in this environment
+- Fallback scan: Scottcjn/rustchain-bounties open issues + explicit reward/cashout path triage
+- web_search unavailable (missing BRAVE_API_KEY)
+
+Hit selected for direct execution:
+- Scottcjn/rustchain-bounties#389
+  - Reward: 8 RTC
+  - Settlement path: comment claim -> fork -> implement -> PR merged
+
+Execution (fixed flow):
+- Claimed issue #389 via comment
+- Fork-first workflow used (sungdark/beacon-skill)
+- Branch: fix/rate-limit-mutation-endpoints
+- Commit: b134071
+- PR to upstream: https://github.com/Scottcjn/beacon-skill/pull/69
+- Posted completion update back to bounty issue
+
+Code delivered:
+- Added write-rate-limit enforcement to remaining relay mutation endpoints:
+  /relay/register, /relay/heartbeat, /relay/message, /relay/identity/rotate, /relay/identity/revoke
+- Fixed heartbeat timestamp initialization for auto-register path safety
+- Validation: python3 -m py_compile atlas/beacon_chat.py
