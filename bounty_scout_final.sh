@@ -106,23 +106,30 @@ else
 
 ## 任务详情
 EOF
+    else
+        # If report exists, update task count
+        sed -i "s/任务发现数量: [0-9]*/任务发现数量: ${#found_opportunities[@]}/" "$REPORT_FILE"
     fi
     
-    # Add tasks to report
+    # Add tasks to report only if not already present
     for opportunity in "${found_opportunities[@]}"; do
         issue_number=$(echo "$opportunity" | jq -r '.number')
         issue_title=$(echo "$opportunity" | jq -r '.title')
         issue_owner=$(echo "$opportunity" | jq -r '.owner')
         issue_repo=$(echo "$opportunity" | jq -r '.repo')
         reward_amount=$(echo "$opportunity" | jq -r '.reward_amount')
+        issue_url=$(echo "$opportunity" | jq -r '.url')
         
-        cat >> "$REPORT_FILE" << EOF
+        # Check if task already exists in report
+        if ! grep -q "$issue_owner/$issue_repo #$issue_number" "$REPORT_FILE"; then
+            cat >> "$REPORT_FILE" << EOF
 
-### [$issue_owner/$issue_repo #$issue_number]($(echo "$opportunity" | jq -r '.url'))
+### [$issue_owner/$issue_repo #$issue_number]($issue_url)
 - 标题: $issue_title
 - 奖励金额: $reward_amount
 - 状态: 待执行
 EOF
+        fi
     done
     
     # Output as JSON

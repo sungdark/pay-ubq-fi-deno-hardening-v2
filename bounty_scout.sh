@@ -1,97 +1,27 @@
 #!/bin/bash
+set -euo pipefail
 
-# Bounty Opportunity Scout
-# Scans for issues with bounties/rewards/help wanted labels
+# 赏金任务扫描脚本
+echo "=== 开始扫描可变现任务 ==="
 
-set -e
-
-# 设置超时时间 (30秒)
-TIMEOUT=30
-
-# Check GitHub permissions in sequence with timeout
-# 1) gh auth status 是否已登录
-if ! timeout $TIMEOUT gh auth status &>/dev/null; then
-    echo "GitHub not authenticated" >&2
+# 检查 GH 权限
+if ! gh auth status &>/dev/null; then
+    echo "未登录 GitHub，无法执行任务"
     exit 1
 fi
 
-# 2) 是否可访问基础 API (简化权限检查)
-if ! timeout $TIMEOUT gh api user &>/dev/null; then
-    echo "Cannot access GitHub API (permission denied)" >&2
+# 扫描标准搜索：bounty OR reward OR "help wanted" 有奖金的任务
+echo "搜索有奖金的可变现任务..."
+SEARCH_QUERY="\"bounty\" OR \"reward\" OR \"help wanted\" sort:updated-desc"
+gh search issues --repo-type all --state open --limit 20 -- q="$SEARCH_QUERY" --json title,body,url,repository,comments,createdAt,updatedAt,labels 2>/dev/null || {
+    echo "搜索失败，检查网络或权限"
     exit 1
-fi
+}
 
-echo "GitHub permissions verified successfully"
+echo "=== 任务扫描完成 ==="
+echo "扫描到 $(gh search issues --repo-type all --state open --limit 20 -- q="$SEARCH_QUERY" | wc -l) 个相关任务"
 
-# Simple search using GitHub CLI with timeout
-search_queries=(
-    "label:bounty"
-    "label:reward"
-    'label:"help wanted"'
-    'label:"good first issue"'
-)
-
-found_opportunities=()
-
-for query in "${search_queries[@]}"; do
-    echo "Searching for: $query" >&2
-    
-    # Try different search approaches with timeout
-    if ! results=$(timeout $TIMEOUT gh api "search/issues?q=${query}+type:issue+state:open" --jq '.items' 2>/dev/null); then
-        echo "Search timed out: $query" >&2
-        continue
-    fi
-    
-    if [ "$results" != "null" ] && [ "$(echo "$results" | jq length 2>/dev/null)" -gt 0 ]; then
-        if ! echo "$results" | jq -c '.[]' 2>/dev/null | while read -r issue; do
-            number=$(echo "$issue" | jq -r '.number')
-            title=$(echo "$issue" | jq -r '.title')
-            body=$(echo "$issue" | jq -r '.body')
-            url=$(echo "$issue" | jq -r '.html_url')
-            
-            # Extract repository info
-            repo_full=$(echo "$issue" | jq -r '.repository_url' | sed 's|https://api.github.com/repos/||')
-            owner=$(echo "$repo_full" | cut -d'/' -f1)
-            repo=$(echo "$repo_full" | cut -d'/' -f2)
-            
-            # Get labels
-            labels=$(echo "$issue" | jq -r '.labels[].name' | tr '[:upper:]' '[:lower:]')
-            
-            # Check for monetary indicators
-            reward_type="unknown"
-            reward_amount=""
-            
-            if echo "$body" | grep -q '\$[0-9]'; then
-                reward_type="monetary"
-                amount=$(echo "$body" | grep '\$[0-9]' | grep -o '\$[0-9]*' | head -1)
-                reward_amount="$amount"
-            elif echo "$labels" | grep -q -E '(bounty|reward)'; then
-                reward_type="monetary"
-            elif echo "$body" | grep -qi -E '(token|nft|badge|recognition)'; then
-                reward_type="non-monetary"
-                keyword=$(echo "$body" | grep -i -E '(token|nft|badge|recognition)' | head -1)
-                reward_amount="$keyword"
-            fi
-            
-            if [ "$reward_type" != "unknown" ]; then
-                opportunity=$(jq -n --arg number "$number" --arg title "$title" --arg owner "$owner" --arg repo "$repo" --arg url "$url" --arg reward_type "$reward_type" --arg reward_amount "$reward_amount" '{"number":$number,"title":$title,"owner":$owner,"repo":$repo,"url":$url,"reward_type":$reward_type,"reward_amount":$reward_amount}')
-                found_opportunities+=("$opportunity")
-            fi
-        done; then
-        echo "Processing results failed: $query" >&2
-        continue
-    fi
-    fi
-    
-    sleep 2
-done
-
-# Output results
-if [ ${#found_opportunities[@]} -eq 0 ]; then
-    echo '[]'
-else
-    printf '%s\n' "${found_opportunities[@]}" | jq -s '.'
-fi
-
-# 确保所有 gh 子进程都被正确清理
-pkill -f "gh api" 2>/dev/null || true
+# 简单的筛选逻辑（实际生产环境可以更复杂）
+echo "
+=== 已找到的可变现任务 ==="
+gh search issues --repo-type all --state open --limit 5 -- q="$SEARCH_QUERY" -- sort updated-desc
